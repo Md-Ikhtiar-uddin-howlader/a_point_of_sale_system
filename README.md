@@ -1,5 +1,7 @@
-<<<<<<< HEAD
-An absolute bare-bones web app.
-=======
-# a_point_of_sale_system
->>>>>>> e7e017b002d9e15f9678e300aff439a21f4ec5a5
+**a_point_of_sale_system**
+
+**Name And Matric:**
+1. MD IKHTIAR UDDIN HOWLADER (1834619)
+2. MUHAMMAD 'AFFIF BIN BIN RUSLI (1923949)
+3. AMIERUL SYAHMI BIN MOHD HASBI (2016973)
+4. DIMYATI AGUNG NABHAN (1929465)
