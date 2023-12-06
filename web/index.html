@@ -1,19 +1,160 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="scaffolded-by" content="https://github.com/dart-lang/sdk">
-    <title>a_point_of_sale_system</title>
-    <link rel="stylesheet" href="styles.css">
-    <script defer src="main.dart.js"></script>
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Information</title>
+  <style>
+    table {
+      width: 50%;
+      border-collapse: collapse;
+      margin: 20px;
+    }
 
+    th, td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    #cart {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      display: none;
+    }
+
+    #invoice {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
 <body>
 
-  <div id="output"></div>
+  <h1>Product Information</h1>
 
+  <table id="productTable">
+    <tr>
+      <th>Item Number</th>
+      <th>Description</th>
+      <th>Price</th>
+      <th>Quantity</th>
+      <th>Total</th>
+      <th>Discount</th>
+      <th>Action</th> <!-- Added Action column for Add to Cart button -->
+    </tr>
+  </table>
+
+  <div id="invoice">
+    <h2>Invoice</h2>
+    <table id="invoiceTable">
+      <tr>
+        <th>Item Number</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Total</th>
+        <th>Discount</th>
+      </tr>
+      <tr>
+        <td colspan="5">Subtotal</td>
+        <td id="subtotal"></td>
+      </tr>
+      <tr>
+        <td colspan="5">Tax (6%)</td>
+        <td id="tax"></td>
+      </tr>
+      <tr>
+        <td colspan="5">Total Amount</td>
+        <td id="totalAmount"></td>
+      </tr>
+      <tr>
+        <td colspan="5">Grand Total</td>
+        <td id="grandTotal"></td>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    // Retrieve product data from local storage and generate table rows
+    var storedData = window.localStorage['products_data'];
+    if (storedData != null) {
+      var products = JSON.parse(storedData);
+      var productTable = document.getElementById('productTable');
+
+      for (var i = 0; i < products.length; i++) {
+        var product = products[i];
+        var row = productTable.insertRow(-1);
+        row.insertCell(0).innerText = product['itemNumber'];
+        row.insertCell(1).innerText = product['description'];
+        row.insertCell(2).innerText = '$' + product['price'].toFixed(2);
+        row.insertCell(3).innerText = product['quantity'];
+        row.insertCell(4).innerText = '$' + (product['price'] * product['quantity']).toFixed(2);
+        row.insertCell(5).innerText = '$' + (product['price'] * product['quantity'] * 0.1).toFixed(2); // Discount column
+
+        // Add a button to add the product to the cart
+        var addToCartButton = document.createElement('button');
+        addToCartButton.innerText = 'Add to Cart';
+        addToCartButton.onclick = (function (index) {
+          return function () {
+            addToCart(products[index]);
+            updateInvoiceTable();
+          };
+        })(i);
+        row.insertCell(6).appendChild(addToCartButton);
+      }
+    }
+
+    // Invoice table and cart to store selected products
+    var invoiceTable = document.getElementById('invoiceTable');
+    var cart = [];
+    var subtotalElement = document.getElementById('subtotal');
+    var taxElement = document.getElementById('tax');
+    var totalAmountElement = document.getElementById('totalAmount');
+    var grandTotalElement = document.getElementById('grandTotal');
+
+    function addToCart(product) {
+      cart.push(product);
+    }
+
+    function updateInvoiceTable() {
+      clearTable(invoiceTable);
+
+      var subtotal = 0;
+
+      for (var product of cart) {
+        var row = invoiceTable.insertRow(-1);
+        row.insertCell(0).innerText = product['itemNumber'];
+        row.insertCell(1).innerText = product['description'];
+        row.insertCell(2).innerText = '$' + product['price'].toFixed(2);
+        row.insertCell(3).innerText = product['quantity'];
+        row.insertCell(4).innerText = '$' + (product['price'] * product['quantity']).toFixed(2);
+        row.insertCell(5).innerText = '$' + (product['price'] * product['quantity'] * 0.1).toFixed(2); // Discount column
+
+        subtotal += product['price'] * product['quantity'];
+      }
+
+      var tax = subtotal * 0.06;
+      var totalAmount = subtotal + tax;
+
+      subtotalElement.innerText = '$' + subtotal.toFixed(2);
+      taxElement.innerText = '$' + tax.toFixed(2);
+      totalAmountElement.innerText = '$' + totalAmount.toFixed(2);
+      grandTotalElement.innerText = '$' + totalAmount.toFixed(2); // Display grand total
+    }
+
+    function clearTable(table) {
+      var rowCount = table.rows.length;
+      for (var i = rowCount - 1; i > 0; i--) {
+        table.deleteRow(i);
+      }
+    }
+  </script>
 </body>
 </html>
