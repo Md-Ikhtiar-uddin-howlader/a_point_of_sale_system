@@ -1,13 +1,44 @@
+<!-- DIMYATI AGUNG NABHAN -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Information</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    table {
+      width: 50%;
+      border-collapse: collapse;
+      margin: 20px;
+    }
 
+    th, td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    #cart {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      display: none;
+    }
+
+    #invoice {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+  </style>
 </head>
 <body>
-
+  
   <h1>Product Information</h1>
 
   <table id="productTable">
@@ -18,10 +49,10 @@
       <th>Quantity</th>
       <th>Total</th>
       <th>Discount</th>
-      <th>Action</th> <!-- Added Action column for Add to Cart button -->
+      <th>Action</th>
     </tr>
   </table>
-
+<!-- Ikhtiar -->
   <div id="invoice">
     <h2>Invoice</h2>
     <table id="invoiceTable">
@@ -32,31 +63,86 @@
         <th>Quantity</th>
         <th>Total</th>
         <th>Discount</th>
-      </tr>
-      <tr>
-        <td colspan="5">Subtotal</td>
-        <td id="subtotal"></td>
-      </tr>
-      <tr>
-        <td colspan="5">Tax (6%)</td>
-        <td id="tax"></td>
-      </tr>
-      <tr>
-        <td colspan="5">Total Amount</td>
-        <td id="totalAmount"></td>
-      </tr>
-      <tr>
-        <td colspan="5">Grand Total</td>
-        <td id="grandTotal"></td>
+        <th>Tax</th>
+        <th>Grand Total</th>
+        <th>Bill</th>
       </tr>
     </table>
   </div>
 
   <script>
     // Retrieve product data from local storage and generate table rows
+    // AFFIF
+    window.localStorage.setItem('products_data', JSON.stringify([
+      {
+        itemNumber: '1',
+        description: 'Iphone 15',
+        price: 4499.00,
+        quantity: 1
+      },
+      {
+        itemNumber: '2',
+        description: 'Macbook',
+        price: 5999.00,
+        quantity: 1
+      },
+      {
+        itemNumber: '3',
+        description: 'Chrome book',
+        price: 2999.00,
+        quantity: 1
+      },
+      {
+        itemNumber: '4',
+        description: 'Chrome book',
+        price: 2999.00,
+        quantity: 1
+      },
+      {
+        itemNumber: '5',
+        description: 'laptop bag',
+        price: 99.00,
+        quantity: 1
+      },
+      {
+        itemNumber: '6',
+        description: 'Blazers',
+        price: 299.00,
+        quantity: 1
+      },
+      {
+        itemNumber: '7',
+        description: 'Fake Eyelashes',
+        price: 29.00,
+        quantity: 1
+      },
+      {
+        itemNumber: '8',
+        description: 'Car Phone Holders',
+        price: 30.00,
+        quantity: 1
+      },
+      {
+        itemNumber: '9',
+        description: 'Phone Cases',
+        price: 10.00,
+        quantity: 1
+      },
+      {
+        itemNumber: '10',
+        description: 'Headphones',
+        price: 159.00,
+        quantity: 1
+      }
+    ]));
+
+      
     var storedData = window.localStorage['products_data'];
     if (storedData != null) {
       var products = JSON.parse(storedData);
+
+
+      // SYAHMI
       var productTable = document.getElementById('productTable');
 
       for (var i = 0; i < products.length; i++) {
@@ -69,13 +155,14 @@
         row.insertCell(4).innerText = '$' + (product['price'] * product['quantity']).toFixed(2);
         row.insertCell(5).innerText = '$' + (product['price'] * product['quantity'] * 0.1).toFixed(2); // Discount column
 
-        // Add a button to add the product to the cart
+        // ikhtiar
+        // Add a button to add the product to the invoice
         var addToCartButton = document.createElement('button');
         addToCartButton.innerText = 'Add to Cart';
         addToCartButton.onclick = (function (index) {
           return function () {
             addToCart(products[index]);
-            updateInvoiceTable();
+            
           };
         })(i);
         row.insertCell(6).appendChild(addToCartButton);
@@ -85,41 +172,38 @@
     // Invoice table and cart to store selected products
     var invoiceTable = document.getElementById('invoiceTable');
     var cart = [];
-    var subtotalElement = document.getElementById('subtotal');
-    var taxElement = document.getElementById('tax');
-    var totalAmountElement = document.getElementById('totalAmount');
-    var grandTotalElement = document.getElementById('grandTotal');
+    var taxCell = document.getElementById('tax');
+    var grandTotalCell = document.getElementById('grandTotal');
 
+    //ikhtiar
     function addToCart(product) {
       cart.push(product);
+      updateCartTable();
     }
+    var bill = document.getElementById('bill');
 
-    function updateInvoiceTable() {
+    function updateCartTable() {
       clearTable(invoiceTable);
 
-      var subtotal = 0;
-
+      var grandTotal = 0;
+      var i = 0;
       for (var product of cart) {
         var row = invoiceTable.insertRow(-1);
-        row.insertCell(0).innerText = product['itemNumber'];
+        row.insertCell(0).innerText = ++i;
         row.insertCell(1).innerText = product['description'];
         row.insertCell(2).innerText = '$' + product['price'].toFixed(2);
         row.insertCell(3).innerText = product['quantity'];
         row.insertCell(4).innerText = '$' + (product['price'] * product['quantity']).toFixed(2);
         row.insertCell(5).innerText = '$' + (product['price'] * product['quantity'] * 0.1).toFixed(2); // Discount column
+        row.insertCell(6).innerText = '$' + (product['price'] * product['quantity'] * 0.06).toFixed(2); // Tax column
+        row.insertCell(7).innerText = '$' + ((product['price'] * product['quantity'] * 1.06) - (product['price'] * product['quantity'] * 0.1).toFixed(2)).toFixed(2); // Grand total column
 
-        subtotal += product['price'] * product['quantity'];
+        grandTotal += parseInt(((product['price'] * product['quantity'] * 1.06) - (product['price'] * product['quantity'] * 0.1).toFixed(2)).toFixed(2));
+
+        row.insertCell(8).innerText = '$' + grandTotal;
       }
-
-      var tax = subtotal * 0.06;
-      var totalAmount = subtotal + tax;
-
-      subtotalElement.innerText = '$' + subtotal.toFixed(2);
-      taxElement.innerText = '$' + tax.toFixed(2);
-      totalAmountElement.innerText = '$' + totalAmount.toFixed(2);
-      grandTotalElement.innerText = '$' + totalAmount.toFixed(2); // Display grand total
     }
-
+    // SYAHMI
     function clearTable(table) {
       var rowCount = table.rows.length;
       for (var i = rowCount - 1; i > 0; i--) {
@@ -127,5 +211,7 @@
       }
     }
   </script>
+
+
 </body>
 </html>
